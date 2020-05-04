@@ -29,9 +29,10 @@ name: Deploy Post image to My Own Amazon ECS
 
 jobs:
   deploy:
-    name: Deploy Post service to My ECR
-#   runs-on: ubuntu-latest # with Latest got errors in AWS scanner and Kubernetes cluster UnsupportedImageError: The operating system 'ubuntu' version '20.04' is not supported.
+    name: Deploy Post service to My ECR and My Kuber Cluster
     runs-on: ubuntu-18.04
+#   runs-on: ubuntu-latest # with Latest got errors in AWS scanner and Kubernetes cluster UnsupportedImageError: The operating system 'ubuntu' version '20.04' is not supported.
+
 
     steps:
     - name: Checkout
@@ -40,8 +41,10 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.maxecr_aws_access_key_id }}
-        aws-secret-access-key: ${{ secrets.maxecr_aws_secret_access_key }}
+        aws-access-key-id: ${{ secrets.myecr_aws_access_key_id }}
+#       aws-access-key-id: ${{ secrets.maxecr_aws_access_key_id }}
+        aws-secret-access-key: ${{ secrets.myecr_aws_secret_access_key }}
+#       aws-secret-access-key: ${{ secrets.maxecr_aws_secret_access_key }}
         aws-region: eu-central-1
 
     - name: Login to Amazon ECR
@@ -53,8 +56,8 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: nigth
-        IMAGE_TAG: latest
-#       IMAGE_TAG: ${{ github.sha }}
+#       IMAGE_TAG: latest
+        IMAGE_TAG: ${{ github.sha }}
       run: |
         # Build a docker container and
         # push it to ECR so that it can
